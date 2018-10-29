@@ -1,4 +1,4 @@
-package exceptions;
+package com.janczura.exceptions;
 
 public class BalanceException extends Exception {
 
