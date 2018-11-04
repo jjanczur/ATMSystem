@@ -48,9 +48,11 @@ public class SystemTest implements Runnable{
     @Override
     public void run() {
 
-        System.out.println("ATM ID = " + atmId);
+
         try {
+            System.out.println("before ATM ID = " + atmId);
             atmUser.withdrawal(5.0);
+            System.out.println("after ATM ID = " + atmId);
         } catch (SQLException | ATMaccountException e) {
             e.printStackTrace();
         }

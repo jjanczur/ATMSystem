@@ -5,10 +5,12 @@ import com.janczura.exceptions.ATMaccountException;
 
 import java.sql.SQLException;
 
+/**
+ * Class that represents the user which is using the ATM. This class executes the commands from Dbcommands, stores the login and password and information if the user that is using the ATM is correctly logged in.
+ */
 public class ATMuser {
     private String login;
     private String pass;
-    private String balance;
     private boolean isLogged;
     public DBcommands dBcommands;
 
@@ -28,10 +30,6 @@ public class ATMuser {
         this.login = login;
     }
 
-    public String getPass() {
-        return pass;
-    }
-
     public void setPass(String pass) {
         this.pass = pass;
     }
@@ -48,11 +46,4 @@ public class ATMuser {
         dBcommands.moneyWithdrawal(this, amount);
     }
 
-    public DBcommands getdBcommands() {
-        return dBcommands;
-    }
-
-    public void setdBcommands(DBcommands dBcommands) {
-        this.dBcommands = dBcommands;
-    }
 }

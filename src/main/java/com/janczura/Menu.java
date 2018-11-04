@@ -1,6 +1,7 @@
 package com.janczura;
 
 import com.janczura.exceptions.ATMaccountException;
+import com.janczura.objects.DBcommands;
 import com.janczura.test.SystemTest;
 
 import java.sql.SQLException;
@@ -16,10 +17,11 @@ public class Menu {
         System.out.println("Press: ");
         System.out.println("1 - Login");
         System.out.println("2 - Display the account balance");
-        System.out.println("3 - Money withdrawal \n");
+        System.out.println("3 - Money withdrawal ");
+        System.out.println("4 - Money deposit ");
         System.out.println("100 - Test ATM System \n");
 
-        int[] options = {1, 2, 3, 100};
+        int[] options = {1, 2, 3, 4, 5, 100};
 
         Scanner reader = new Scanner(System.in);
 
@@ -59,7 +61,25 @@ public class Menu {
                 break;
             }
             case 3:{
-                performWithdrawal();
+                performWithdrawalDeposit(true);
+                break;
+            }
+            case 4:{
+                performWithdrawalDeposit(false);
+                break;
+            }
+            case 5:{
+                //For testing execute withdrawal without demarcation and balance check
+                Scanner reader = new Scanner(System.in);
+                System.out.println("Enter amount: ");
+                Double amount = reader.nextDouble();
+                DBcommands dBcommands = new DBcommands(dbSetup.getDb());
+                try {
+                    dBcommands.forceWithdrawal(dbSetup.getAtmUser(), amount);
+                } catch (SQLException | ATMaccountException e) {
+                    System.out.println(e.getMessage());
+                }
+
                 break;
             }
             case 100:{
@@ -75,24 +95,27 @@ public class Menu {
 
 
 
-    private void performWithdrawal(){
+    private void performWithdrawalDeposit(boolean isWithdrawal){
 
         Scanner reader = new Scanner(System.in);
 
         try {
-            System.out.println("Enter amount for withdrawal: ");
+            System.out.println("Enter amount: ");
             Double amount = reader.nextDouble();
+            if(!isWithdrawal) amount = -amount;
             dbSetup.getAtmUser().withdrawal(amount);
             displayMenu();
         }
         catch (Exception e){
-            System.out.println("\n You are not logged in.  ");
+            System.out.println(e.getMessage());
             displayMenu();
         }
         finally {
             reader.close();
         }
     }
+
+
 
     private void getBalance() {
         try {
@@ -114,7 +137,7 @@ public class Menu {
             System.out.println("Enter PIN: ");
             int pass = reader.nextInt();
             System.out.println("login = " + login + " pass = " + pass);
-            dbSetup.atmLogin(String.valueOf(login), String.valueOf(pass));
+            atmLogin(String.valueOf(login), String.valueOf(pass));
             displayMenu();
         }
         catch (Exception e){
@@ -126,6 +149,18 @@ public class Menu {
         }
     }
 
+    private void atmLogin(String login, String pass) throws SQLException {
+        dbSetup.getAtmUser().setLogin(login);
+        dbSetup.getAtmUser().setPass(pass);
+        dbSetup.getAtmUser().login();
+
+        if(dbSetup.getAtmUser().isLogged()){
+            System.out.println("Login successful");
+        }
+        else System.out.println("Login unsuccessful. Wrong account id or password. ");
+    }
+
+
     public DBsetup getDBsetup() {
         return dbSetup;
     }
@@ -134,6 +169,9 @@ public class Menu {
         this.dbSetup = dbSetup;
     }
 
+    /**
+     * Method that creates threadsNum threads and run in each withdrawal from ATM account of the user 1
+     */
     private void performSystemTest() {
 
         int threadsNum = 10;
