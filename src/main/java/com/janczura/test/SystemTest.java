@@ -8,6 +8,10 @@ import com.janczura.objects.DBcommands;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+/**
+ * Class that represents one ATM instance with it's own connection.
+ * Each of this ATMs can be run in a different thread that's why it implements Runnable intefrace.
+ */
 public class SystemTest implements Runnable{
 
     private int atmId;
