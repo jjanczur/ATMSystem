@@ -171,6 +171,8 @@ public class Menu {
 
     /**
      * Method that creates threadsNum threads and run in each withdrawal from ATM account of the user 1
+     * To test the db I'm creating 10 different ATM machines with 10 different connections.
+     * On each ATM I'm logging in to the first user and I'm trying to withdrawal money from it's account.
      */
     private void performSystemTest() {
 
