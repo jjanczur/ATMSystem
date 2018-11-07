@@ -83,10 +83,11 @@ public class DBcommands {
     }
 
     /**
-     * Methode to perform withdrawal operation. Demarcation is used to assure that balance after withdrawal is > 0. If not transaction is rolled back.
+     * Methode to perform withdrawal operation.
      * 1. Check if user is correctly logged in.
      * 2. Perform sql update query - money withdrawal
-     * 3. if the balance is < 0 - rollback else commit
+     * 3. Since we are in strickt mode and balance column is unsigned any update that may result in negative balance will throw an exception.
+     * So setting up negative balance is equal to trying update decimal column with string value - the exception will be thrown and the transaction will be rolled back
      * Methode is SQLinjection safe due to usage of PreparedStatement
      * @param atmUser Object that represents user
      * @param amount Amount of money to withdrawal from users bank account
@@ -105,12 +106,8 @@ public class DBcommands {
                 stmt.setString(2, atmUser.getLogin());
                 stmt.executeUpdate();
 
-                if(atmUser.getBalance() < 0){
-                    System.out.println("The account balance is not sufficient to perform this operation");
-                    db.getConn().rollback();
-                }else {
-                    db.getConn().commit();
-                }
+                db.getConn().commit();
+
                 stmt.close();
 
             } catch (SQLException e) {
